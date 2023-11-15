@@ -1,0 +1,4 @@
+
+exten => VVVVV,n,GotoIf($["${IVR_CONTEXT}" != ""]?${IVR_CONTEXT},return,1)
+exten => VVVVV,hint,PJSIP/VVVVV&Custom:DNDVVVVV,CustomPresence:VVVVV ;
+same => n,Hangup()

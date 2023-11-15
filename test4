@@ -1,0 +1,29 @@
+exten => _.,1,Set(QAGENT=${EXTEN})
+exten => _.,n,Set(__FROMQ=true)
+exten => _.,n,GotoIf($["${LEN(${NODEST})}" = "0"]?hangup)
+exten => _.,n,GotoIf($["${DIALPLAN_EXISTS(from-queue,${NODEST},1)}" = "1"]?${NODEST},1:hangup)
+exten => _.,n(hangup),Macro(hangupcall,)
+exten => h,1,Macro(hangupcall,)
+
+;--== end of [from-queue] ==--;
+
+
+
+
+[from-queue-exten-only]
+include => from-queue-exten-only-custom
+exten => _XXXXXXX,1,GotoIf($[${DB_EXISTS(AMPUSER/${EXTEN}/cidnum)} = 0 & ${QCONTEXT}=2]?hangup)
+exten => _XXXXXXX,n,GotoIf($[${DB_EXISTS(AMPUSER/${EXTEN}/cidnum)} = 0]?from-queue-exten-only-x,${EXTEN},1)
+exten => _XXXXXXX,n,Set(RingGroupMethod=none)
+exten => _XXXXXXX,n,Set(CHANNEL(language)=${MASTER_CHANNEL(CHANNEL(language))})
+exten => _XXXXXXX,n,Set(QDOPTS=${IF($["${CALLER_DEST}"!=""]?g)}${IF($["${AGENT_DEST}"!=""]?F(${AGENT_DEST}))})
+exten => _XXXXXXX,n(checkrecord),Set(CALLTYPE_OVERRIDE=external)
+exten => _XXXXXXX,n,ExecIf($[!${LEN(${FROMEXTEN})}]?Set(FROMEXTEN=${IF(${LEN(${NODEST})}?${NODEST}:external)}))
+exten => _XXXXXXX,n,Gosub(sub-record-check,s,1(exten,${EXTEN},))
+exten => _XXXXXXX,n,Macro(dial-one,,${DIAL_OPTIONS}${QDOPTS},${EXTEN})
+exten => _XXXXXXX,n,GotoIf($["${CALLER_DEST}"!=""&&"${DIALSTATUS}"="ANSWER"]?${CUT(CALLER_DEST,^,1)},${CUT(CALLER_DEST,^,2)},${CUT(CALLER_DEST,^,3)})
+exten => _XXXXXXX,n(hangup),Hangup
+
+exten => h,1,Macro(hangupcall,)
+
+;--== end of [from-queue-exten-only] ==--;

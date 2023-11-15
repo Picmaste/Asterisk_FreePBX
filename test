@@ -1,0 +1,4 @@
+exten => VVVVV,1,Set(__RINGTIMER=${IF($["${DB(AMPUSER/VVVVV/ringtimer)}" > "0"]?${DB(AMPUSER/VVVVV/ringtimer)}:${RINGTIMER_DEFAULT})})
+exten => VVVVV,n,ExecIf($["${REGEX("from-queue" ${CHANNEL})}"="1" && "${CONTEXT}"="from-internal-xfer"]?Set(__CWIGNORE=))
+exten => VVVVV,n,Macro(exten-vm,novm,VVVVV,1,0,1)
+exten => VVVVV,n(dest),Set(__PICKUPMARK=)

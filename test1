@@ -1,0 +1,1 @@
+exten => VVVVV,n,GotoIf($["${DIALSTATUS}"="CHANUNAVAIL"]?ext-queues-custom,RRRRR,1)

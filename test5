@@ -1,0 +1,1 @@
+exten => h,1,Macro(hangupcall,)
